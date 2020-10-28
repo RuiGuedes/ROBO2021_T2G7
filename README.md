@@ -32,6 +32,13 @@ César Alexandre da Costa Pinho <br>
     /ssr_description
         package.xml
         CMakeLists.txt
+        / scripts
+            control1.py
+            control2.py
+            control3.py
+    /ssr_description
+        package.xml
+        CMakeLists.txt
         /urdf
             ssr.urdf
         /meshes
@@ -41,6 +48,8 @@ César Alexandre da Costa Pinho <br>
         /materials
         /cad
     /ssr_gazebo
+        package.xml
+        CMakeLists.txt
         /launch
             ssr.launch
         /worlds
