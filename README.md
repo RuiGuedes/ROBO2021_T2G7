@@ -63,3 +63,24 @@ César Alexandre da Costa Pinho <br>
 ```
 
 ### Setup
+
+1. Install the packages
+```bash
+cd catkin_ws/src
+git clone https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+git clone https://github.com/ROBOTIS-GIT/turtlebot3.git
+git clone https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+```
+
+2. Build the packages
+```bash
+cd catkin_ws 
+catkin_make
+source devel/setup.bash
+```
+
+### Running
+
+```
+roslaunch srr_gazebo srr.launch
+```
