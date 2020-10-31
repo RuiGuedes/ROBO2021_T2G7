@@ -18,7 +18,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <polyline>
-            <height>0.1</height>
+            <height>0.3</height>
             <point>-1.10012 -0.499976</point>
             <point>-1.09895 -0.499976</point>
             <point>-1.09769 -0.516064</point>
@@ -148,7 +148,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <polyline>
-            <height>0.1</height>
+            <height>0.3</height>
             <point>-1.10012 -0.499976</point>
             <point>-1.09895 -0.499976</point>
             <point>-1.09769 -0.516064</point>
