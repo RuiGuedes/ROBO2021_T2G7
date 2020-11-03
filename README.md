@@ -76,11 +76,12 @@ git clone https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
 ```bash
 cd catkin_ws 
 catkin_make
-source devel/setup.bash
 ```
 
 ### Running
 
-```
+```bash
+cd catkin_ws 
+devel/setup.bash
 roslaunch srr_gazebo srr.launch
 ```
