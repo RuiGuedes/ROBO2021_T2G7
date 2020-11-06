@@ -7,9 +7,10 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
 class WallFollower:
-    _TARGET_DISTANCE = 0.2 # Desired distance between the wall and the robot
+    _TARGET_DISTANCE = 0.2      # Desired distance between the wall and the robot
 
-    _PROPOTIONAL_FACTOR = 1.8 # Propotional factor of the error
+    _PROPOTIONAL_FACTOR = 2  # Propotional factor of the error
+    _INTEGRAL_FACTOR = 0.1     # Integral factor of the error
 
     def __init__(self):
         self.rate = rospy.Rate(10)
@@ -18,6 +19,7 @@ class WallFollower:
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
         self.scan = LaserScan(ranges=[math.inf])
+        self.error_integral = 0.0
 
         self.loop()
 
@@ -35,6 +37,7 @@ class WallFollower:
             new_twist.linear.x = 0.4; new_twist.linear.y = 0.0; new_twist.linear.z = 0.0
 
             if min_range < 1:
+                # self.scan.ranges[right_angle]
                 distance = self.scan.ranges[right_angle] - self._TARGET_DISTANCE
                 delta_angle = (min_angle - right_angle) * math.pi / 180
 
@@ -47,12 +50,11 @@ class WallFollower:
 
                 # error_value = delta_angle
                 # error_value = angular_direction * distance
-                error_value = delta_angle + angular_direction * distance
-
-                # error_value = max(-2, min(error_value, 2))
+                error_value = max(-3.5, min(delta_angle + angular_direction * distance, 3.5))
+                self.error_integral += max(-0.5, min(error_value * 0.1, 0.5))
 
                 new_twist.angular.x = 0.0; new_twist.angular.y = 0.0; 
-                new_twist.angular.z = self._PROPOTIONAL_FACTOR * error_value
+                new_twist.angular.z = self._PROPOTIONAL_FACTOR * error_value + self._INTEGRAL_FACTOR * self.error_integral
                 self.cmd_vel_pub.publish(new_twist)
             
             self.rate.sleep()
