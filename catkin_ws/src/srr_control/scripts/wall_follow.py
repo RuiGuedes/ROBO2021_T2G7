@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 import math
+import random
 import rospy
 
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
 class WallFollower:
-    _TARGET_DISTANCE = 0.2      # Desired distance between the wall and the robot
+    _APPROACH_DISTANCE = 0.75 # Distance from which the robot will start following the wall instead of going towards it 
+    _FOLLOW_DISTANCE = 0.2 # Desired distance between the wall and the robot when it is following the wall
 
     _ANGLE_FACTOR = 2.5  # Propotional factor of the error of the angle between wall and robot
     _DISTANCE_FACTOR = 8  # Propotional factor of the error of the distance between wall and robot
@@ -32,20 +34,32 @@ class WallFollower:
             right_angle = 270 if min_angle > 180 else 90
 
             new_twist = Twist()
-            new_twist.linear.x = 0.2; new_twist.linear.y = 0.0; new_twist.linear.z = 0.0
+            new_twist.linear.y = 0.0; new_twist.linear.z = 0.0
+            new_twist.angular.x = 0.0; new_twist.angular.y = 0.0
 
-            if min_range < 1:
-                distance = min_range - self._TARGET_DISTANCE
+            if min_range < self._APPROACH_DISTANCE:
+                # Follow wall
+                distance = min_range - self._FOLLOW_DISTANCE
 
-                if self.scan.ranges[0] < 1.75 * self._TARGET_DISTANCE:
+                if self.scan.ranges[0] < 1.75 * self._FOLLOW_DISTANCE:
                     delta_angle = math.pi/2 if self.scan.ranges[90] > self.scan.ranges[270] else -0.65 * math.pi
                 else:
                     delta_angle = (min_angle - right_angle) * math.pi / 180
 
-                new_twist.angular.x = 0.0; new_twist.angular.y = 0.0; 
+                new_twist.linear.x = 0.2
                 new_twist.angular.z = max(-3, min(self._ANGLE_FACTOR * delta_angle + self._DISTANCE_FACTOR * angular_direction * distance, 3))
-                self.cmd_vel_pub.publish(new_twist)
+            elif min_range < self.scan.range_max:
+                # Approach wall
+                delta_angle = (min_angle if min_angle < 180 else min_angle - 360) * math.pi / 180
+
+                new_twist.linear.x = 0.5
+                new_twist.angular.z = self._ANGLE_FACTOR * delta_angle
+            else:
+                # Wander
+                new_twist.linear.x = 0.5
+                new_twist.angular.z = self._ANGLE_FACTOR * random.gauss(0, 1)
             
+            self.cmd_vel_pub.publish(new_twist)
             self.rate.sleep()
 
 
