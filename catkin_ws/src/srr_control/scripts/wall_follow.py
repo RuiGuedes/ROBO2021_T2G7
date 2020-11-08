@@ -38,7 +38,7 @@ class WallFollower:
                 distance = min_range - self._TARGET_DISTANCE
 
                 if self.scan.ranges[0] < 1.75 * self._TARGET_DISTANCE:
-                    delta_angle = math.pi/2 if self.scan.ranges[90] > self.scan.ranges[270] else 3 * math.pi/2
+                    delta_angle = math.pi/2 if self.scan.ranges[90] > self.scan.ranges[270] else -0.65 * math.pi
                 else:
                     delta_angle = (min_angle - right_angle) * math.pi / 180
 
