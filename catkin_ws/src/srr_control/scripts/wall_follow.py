@@ -17,18 +17,18 @@ class WallFollower:
     def __init__(self):
         self.rate = rospy.Rate(10)
 
-        self.scan_sub = rospy.Subscriber('scan', LaserScan, self.update_scan)
+        self.scan_sub = rospy.Subscriber('scan', LaserScan, self._update_scan)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
-        self.scan = LaserScan(ranges=[math.inf])
-        self.loop()
+        self._scan = LaserScan(ranges=[math.inf])
+        self._loop()
 
-    def update_scan(self, data: LaserScan):
-        self.scan = data
+    def _update_scan(self, data: LaserScan):
+        self._scan = data
 
-    def loop(self):
+    def _loop(self):
         while not rospy.is_shutdown():
-            min_range, min_angle = min((range, i) for (i, range) in enumerate(self.scan.ranges))
+            min_range, min_angle = min((range, i) for (i, range) in enumerate(self._scan.ranges))
 
             angular_direction = -1 if min_angle > 180 else 1
             right_angle = 270 if min_angle > 180 else 90
@@ -41,14 +41,14 @@ class WallFollower:
                 # Follow wall
                 distance = min_range - self._FOLLOW_DISTANCE
 
-                if self.scan.ranges[0] < 1.75 * self._FOLLOW_DISTANCE:
-                    delta_angle = math.pi/2 if self.scan.ranges[90] > self.scan.ranges[270] else -0.65 * math.pi
+                if self._scan.ranges[0] < 1.75 * self._FOLLOW_DISTANCE:                    
+                    delta_angle = math.pi/4 if self._scan.ranges[90] > self._scan.ranges[270] else -math.pi/4
                 else:
                     delta_angle = (min_angle - right_angle) * math.pi / 180
 
                 new_twist.linear.x = 0.2
                 new_twist.angular.z = max(-3, min(self._ANGLE_FACTOR * delta_angle + self._DISTANCE_FACTOR * angular_direction * distance, 3))
-            elif min_range < self.scan.range_max:
+            elif min_range < self._scan.range_max:
                 # Approach wall
                 delta_angle = (min_angle if min_angle < 180 else min_angle - 360) * math.pi / 180
 
@@ -61,7 +61,6 @@ class WallFollower:
             
             self.cmd_vel_pub.publish(new_twist)
             self.rate.sleep()
-
 
 if __name__ == '__main__':
     try:
