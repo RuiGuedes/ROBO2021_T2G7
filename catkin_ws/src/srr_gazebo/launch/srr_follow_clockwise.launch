@@ -1,0 +1,6 @@
+<launch>
+    <include file="$(find srr_gazebo)/launch/srr_core.launch">
+        <arg name="x_pos" value="0.0"/>
+        <arg name="y_pos" value="0.8"/>
+    </include>
+</launch>

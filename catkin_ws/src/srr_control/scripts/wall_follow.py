@@ -42,12 +42,13 @@ class WallFollower:
                 distance = min_range - self._FOLLOW_DISTANCE
 
                 if self._scan.ranges[0] < 1.75 * self._FOLLOW_DISTANCE:                    
-                    delta_angle = math.pi/4 if self._scan.ranges[90] > self._scan.ranges[270] else -math.pi/4
+                    new_twist.linear.x = 0.15
+                    delta_angle = math.pi/3 if self._scan.ranges[90] > self._scan.ranges[270] else -math.pi/3
                 else:
+                    new_twist.linear.x = 0.2
                     delta_angle = (min_angle - right_angle) * math.pi / 180
 
-                new_twist.linear.x = 0.2
-                new_twist.angular.z = max(-3, min(self._ANGLE_FACTOR * delta_angle + self._DISTANCE_FACTOR * angular_direction * distance, 3))
+                new_twist.angular.z = max(-2.84, min(self._ANGLE_FACTOR * delta_angle + self._DISTANCE_FACTOR * angular_direction * distance, 2.84))
             elif min_range < self._scan.range_max:
                 # Approach wall
                 delta_angle = (min_angle if min_angle < 180 else min_angle - 360) * math.pi / 180

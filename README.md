@@ -83,5 +83,5 @@ catkin_make
 ```bash
 cd catkin_ws 
 devel/setup.bash
-roslaunch srr_gazebo srr.launch
+roslaunch srr_gazebo <launch file>
 ```
